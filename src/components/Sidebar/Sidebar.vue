@@ -31,6 +31,7 @@
 
 	const callService = (label: string) => {
 		isLoading.value = true;
+		isImgLoading.value = true;
 		label?.toLocaleLowerCase() === Resources.ABERTURAS && getApertures();
 
 		label?.toLocaleLowerCase() === Resources.EQUIPAMENTO && getEquipments();
@@ -73,6 +74,7 @@
 
 	const handleLoad = () => {
 		isImgLoading.value = false;
+		imgHasError.value = false;
 	};
 	const handleError = () => {
 		imgHasError.value = true;
@@ -200,19 +202,19 @@
 				<div :class="[isImgLoading ? 'hidden' : 'block']">
 					<img
 						class="w-32 h-32 rounded-md object-cover"
-						v-show="!imgHasError"
 						:src="product.img"
 						@load="handleLoad"
 						@error="handleError"
+						v-show="!imgHasError"
 					/>
 
+				</div>
 					<div
 						class="h-32 w-32 flex justify-center items-center bg-gray-100 text-gray-400 text-sm text-center font-medium"
 						v-show="imgHasError"
 					>
 						Imagen no disponible
 					</div>
-				</div>
 
 				<p class="text-center text-sm pt-1 font-light text-gray-900 border rounded-b-lg bg-gray-200 mt-[-4px]">
 					{{ product.name }}
