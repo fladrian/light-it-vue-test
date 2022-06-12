@@ -1,4 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import './index.css'
 
-createApp(App).mount('#app')
+import Notifications from '@kyvg/vue3-notification'
+
+createApp(App).use(Notifications).mount("#app");
