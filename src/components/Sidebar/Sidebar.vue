@@ -1,67 +1,52 @@
 <script lang="ts" setup>
 	import { Ref, ref } from 'vue';
+
+	// constants
 	import { Resources } from '../../constants/Enums';
 	import { menuOptions } from '../../constants/MenuItems';
-	import { ICategory, Items } from '../../interfaces/ICategories';
-	import { GetApertures } from '../../services/aperture.services';
-	import { GetCompletions } from '../../services/completion.services';
-	import { GetEquipments } from '../../services/equipment.services';
-
+	// interfaces/types
+	import { Items } from '../../interfaces/ICategories';
+	// store
+	import {useFortinures} from '../../store/store'
+	// assets
 	import chevronIcon from '../../assets/activo.png';
+	// components
 	import Loader from '../shared/Loader.vue';
-	import { notify } from '@kyvg/vue3-notification';
 	import AsideButtons from './AsideButtons.vue';
-
 	import ProductsSidebar from './ProductsSidebar.vue';
+	// external libraries
+	import { notify } from '@kyvg/vue3-notification';
 
-	const menuItems = ref(menuOptions);
 	const currentItem = ref('');
+	const menuItems = ref(menuOptions);
 	const isCategoryDrawerOpen = ref(false);
-	const isLoading = ref(true);
-
-	const categories: Ref<ICategory[] | undefined> = ref([]);
 	const products: Ref<Items[] | undefined> = ref([]);
 	const product = ref('');
+
+	const fornitures = useFortinures()
 
 	const activeItem = (label: string) => {
 		currentItem.value = label;
 		isCategoryDrawerOpen.value = true;
 		callService(label);
-		categories.value = [];
+		fornitures.cleanCategories()
 		products.value = [];
 	};
 
 	const callService = (label: string) => {
-		isLoading.value = true;
-		label?.toLocaleLowerCase() === Resources.ABERTURAS && getApertures();
+		fornitures.setIsLoading(true)
 
-		label?.toLocaleLowerCase() === Resources.EQUIPAMENTO && getEquipments();
+		label?.toLocaleLowerCase() === Resources.ABERTURAS && fornitures.getApertures();
 
-		label?.toLocaleLowerCase() === Resources.TERMINACIONES && getCompletions();
+		label?.toLocaleLowerCase() === Resources.EQUIPAMENTO && fornitures.getEquipments();
+
+		label?.toLocaleLowerCase() === Resources.TERMINACIONES && fornitures.getCompletions();
 	};
 
 	const closeCategoryDrawer = () => {
 		isCategoryDrawerOpen.value = false;
 		products.value = [];
 		currentItem.value = '';
-	};
-
-	const getApertures = async () => {
-		const data = await GetApertures();
-		categories.value = data;
-		isLoading.value = false;
-	};
-
-	const getCompletions = async () => {
-		const data = await GetCompletions();
-		categories.value = data;
-		isLoading.value = false;
-	};
-
-	const getEquipments = async () => {
-		const data = await GetEquipments();
-		categories.value = data;
-		isLoading.value = false;
 	};
 
 	const getProducts = (name: string, productsArray: Items[]) => {
@@ -88,6 +73,7 @@
 			type: 'success',
 		});
 	};
+
 </script>
 
 <template>
@@ -119,14 +105,14 @@
 			class="text-gray-600 text-xl mb-3 font-bold flex justify-between items-center"
 		>
 			{{ currentItem }}
-			<Loader v-show="isLoading" />
+			<Loader v-show="fornitures.isLoading" />
 		</h2>
 
 		<div
 			class="flex justify-between items-center mx-auto bg-white px-4 py-2 rounded-xl mb-2 cursor-pointer hover:bg-gray-300 transition-colors duration-300"
 			:key="idx"
 			@click="getProducts(name, items)"
-			v-for="({ name, items }, idx) in categories"
+			v-for="({ name, items }, idx) in fornitures.categories"
 		>
 			<h2 class="text-gray-500 font-normal">
 				{{ name }}
