@@ -18,3 +18,4 @@ Al correr la aplicación en local puedes acceder por el navegador web mediante l
 - Tailwind
 - Axios
 - vue3-notification
+- Pinia
